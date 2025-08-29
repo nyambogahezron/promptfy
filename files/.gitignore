@@ -1,6 +1,0 @@
-node_modules/
-.expo/
-npm-debug.*
-# macOS
-.DS_Store
-expo-env.d.ts
