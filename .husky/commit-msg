@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Check commit message format (optional - conventional commits)
-# Uncomment if you want to enforce conventional commit format
-# bun commitlint --edit $1

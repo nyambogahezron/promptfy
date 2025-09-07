@@ -25,7 +25,9 @@
 			},
 			"correctness": {
 				"noUnusedVariables": "warn",
-				"useExhaustiveDependencies": "warn"
+				"useExhaustiveDependencies": "warn",
+				"noUnusedFunctionParameters": "warn",
+				"noNestedComponentDefinitions": "warn"
 			},
 			"style": {
 				"noNonNullAssertion": "warn",
@@ -37,7 +39,8 @@
 				"noUnknownAtRules": "off"
 			},
 			"a11y": {
-				"noLabelWithoutControl": "warn"
+				"noLabelWithoutControl": "warn",
+				"useSemanticElements": "warn"
 			}
 		}
 	},

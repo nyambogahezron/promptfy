@@ -262,7 +262,9 @@ export function AIEnhancementPanel({
 											)}
 										</Button>
 									</div>
-									{index < enhancement.variations?.length - 1 && <Separator className="my-4" />}
+									{index < (enhancement.variations?.length ?? 0) - 1 && (
+										<Separator className="my-4" />
+									)}
 								</motion.div>
 							))}
 						</div>

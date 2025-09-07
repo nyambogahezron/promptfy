@@ -14,6 +14,7 @@
 		"build:web": "turbo run build --filter=web",
 		"build:api": "turbo run build --filter=api",
 		"cleanup": "./scripts/cleanup.sh",
+		"pre-commit": "./scripts/pre-commit.sh",
 		"format": "biome format --write .",
 		"format:check": "biome format .",
 		"lint": "turbo run lint",

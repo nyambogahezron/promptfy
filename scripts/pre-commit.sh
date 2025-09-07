@@ -1,7 +1,5 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/bash
 
-# Run final checks before push
 echo "Running pre-push checks..."
 
 # Check formatting and linting
@@ -20,4 +18,4 @@ bun run build
 echo "Running all tests..."
 bun run test
 
-echo "✅ All pre-push checks passed!"
+echo "✅ Pre-commit checks completed!"

@@ -118,6 +118,7 @@ const Carousel = React.forwardRef<
 				canScrollNext,
 			}}
 		>
+			{/* biome-ignore lint/a11y/useSemanticElements: carousel requires specific ARIA attributes */}
 			<div
 				ref={ref}
 				onKeyDownCapture={handleKeyDown}
@@ -159,6 +160,7 @@ const CarouselItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLD
 		const { orientation } = useCarousel();
 
 		return (
+			// biome-ignore lint/a11y/useSemanticElements: carousel slide requires specific ARIA attributes
 			<div
 				ref={ref}
 				role="group"

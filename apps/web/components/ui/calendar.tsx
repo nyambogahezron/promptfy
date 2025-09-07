@@ -8,6 +8,10 @@ import { cn } from "@/lib/utils";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
+// Define components outside to avoid nesting
+const IconLeft = () => <ChevronLeft className="h-4 w-4" />;
+const IconRight = () => <ChevronRight className="h-4 w-4" />;
+
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
 	return (
 		<DayPicker
@@ -46,8 +50,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
 				...classNames,
 			}}
 			components={{
-				IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-				IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+				IconLeft,
+				IconRight,
 			}}
 			{...props}
 		/>
