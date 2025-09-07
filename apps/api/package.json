@@ -1,54 +1,55 @@
 {
-  "name": "api",
-  "version": "0.0.0",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "start": "node dist/index.js",
-    "dev": "tsup --watch --onSuccess \"node dist/index.cjs\"",
-    "build": "tsup",
-    "check-types": "tsc --noEmit",
-    "lint": "eslint src/ --max-warnings 0",
-    "test": "jest --detectOpenHandles"
-  },
-  "jest": {
-    "preset": "@repo/jest-presets/node"
-  },
-  "dependencies": {
-    "@repo/logger": "*",
-    "bcrypt": "^6.0.0",
-    "body-parser": "^1.20.3",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "http-status-code": "^2.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.0",
-    "morgan": "^1.10.0",
-    "nodemailer": "^7.0.5"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@repo/eslint-config": "*",
-    "@repo/jest-presets": "*",
-    "@repo/typescript-config": "*",
-    "@types/bcrypt": "^6.0.0",
-    "@types/body-parser": "^1.19.5",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^24.3.0",
-    "@types/nodemailer": "^7.0.1",
-    "@types/supertest": "^6.0.2",
-    "eslint": "^9.31.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.1.0",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "tsup": "^8.5.0",
-    "typescript": "5.8.2"
-  }
+	"name": "api",
+	"version": "0.0.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"start": "node dist/index.js",
+		"dev": "tsup --watch --onSuccess \"node dist/index.cjs\"",
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"lint": "biome lint src/",
+		"lint:fix": "biome lint --write src/",
+		"format": "biome format --write src/",
+		"check": "biome check src/",
+		"test": "jest --detectOpenHandles"
+	},
+	"jest": {
+		"preset": "@repo/jest-presets/node"
+	},
+	"dependencies": {
+		"@repo/logger": "*",
+		"bcrypt": "^6.0.0",
+		"body-parser": "^1.20.3",
+		"cors": "^2.8.5",
+		"crypto": "^1.0.1",
+		"dotenv": "^17.2.1",
+		"express": "^5.1.0",
+		"http-status-codes": "^2.3.0",
+		"jsonwebtoken": "^9.0.2",
+		"mongoose": "^8.18.0",
+		"morgan": "^1.10.1",
+		"nodemailer": "^7.0.5"
+	},
+	"devDependencies": {
+		"@jest/globals": "^29.7.0",
+		"@repo/jest-presets": "*",
+		"@repo/typescript-config": "*",
+		"@types/bcrypt": "^6.0.0",
+		"@types/body-parser": "^1.19.6",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.3",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/morgan": "^1.9.10",
+		"@types/node": "^24.3.0",
+		"@types/nodemailer": "^7.0.1",
+		"@types/supertest": "^6.0.3",
+		"jest": "^29.7.0",
+		"nodemon": "^3.1.10",
+		"supertest": "^7.1.4",
+		"ts-node": "^10.9.2",
+		"ts-node-dev": "^2.0.0",
+		"tsup": "^8.5.0",
+		"typescript": "5.8.3"
+	}
 }

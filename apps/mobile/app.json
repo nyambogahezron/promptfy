@@ -1,38 +1,34 @@
 {
-  "expo": {
-    "name": "Promptfy",
-    "slug": "promptfy",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "single",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-font",
-      "expo-secure-store",
-      "expo-web-browser"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "1d5b3844-6f46-4e59-831a-ccbde113c5ee"
-      }
-    },
-    "android": {
-      "package": "com.hezron.promptfy"
-    }
-  }
+	"expo": {
+		"name": "Promptfy",
+		"slug": "promptfy",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/images/icon.png",
+		"scheme": "myapp",
+		"userInterfaceStyle": "automatic",
+		"newArchEnabled": true,
+		"ios": {
+			"supportsTablet": true
+		},
+
+		"android": {
+			"package": "com.hezron.promptfy"
+		},
+		"web": {
+			"bundler": "metro",
+			"output": "single",
+			"favicon": "./assets/images/favicon.png"
+		},
+		"plugins": ["expo-router", "expo-font", "expo-secure-store", "expo-web-browser"],
+		"experiments": {
+			"typedRoutes": true
+		},
+		"extra": {
+			"router": {},
+			"eas": {
+				"projectId": "1d5b3844-6f46-4e59-831a-ccbde113c5ee"
+			}
+		}
+	}
 }

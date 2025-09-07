@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running pre-commit checks..."
+
+# Run lint-staged for formatting and linting only staged files
+echo "Formatting and linting staged files..."
+bun lint-staged
+
+# Only run type checking and build if TypeScript files are staged
+STAGED_TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$')
+
+if [ -n "$STAGED_TS_FILES" ]; then
+  echo "TypeScript files detected, running type checking..."
+  bun run check-types
+  
+  echo "Building affected workspaces..."
+  bun run build
+fi
+
+# Only run tests if test files or source files that might affect tests are staged
+STAGED_TEST_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(test|spec)\.(ts|tsx|js|jsx)$')
+STAGED_SRC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' | grep -v -E '\.(test|spec)\.')
+
+if [ -n "$STAGED_TEST_FILES" ] || [ -n "$STAGED_SRC_FILES" ]; then
+  echo "🧪 Running tests..."
+  bun run test --passWithNoTests
+fi
+
+echo "✅ Pre-commit checks completed!"

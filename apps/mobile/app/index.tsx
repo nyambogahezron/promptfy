@@ -1,13 +1,12 @@
-import { Redirect } from 'expo-router';
-import { useAuthStore } from '@/store/authStore';
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  const isAuthenticated = true;
-  // const { isAuthenticated } = useAuthStore();
+	const isAuthenticated = true;
+	// const { isAuthenticated } = useAuthStore();
 
-  if (isAuthenticated) {
-    return <Redirect href="/(home)" />;
-  }
+	if (isAuthenticated) {
+		return <Redirect href="/(home)" />;
+	}
 
-  return <Redirect href="/(auth)/login" />;
+	return <Redirect href="/(auth)/login" />;
 }
