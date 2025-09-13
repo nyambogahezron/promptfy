@@ -15,6 +15,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { colors } from "@/constants/Colors";
 import { statusBarHeight } from "@/constants/Layout";
+import { authClient } from "@/lib/auth-client";
 import { useThemeStore } from "@/store/themeStore";
 
 export default function ForgotPasswordScreen() {
@@ -45,13 +46,14 @@ export default function ForgotPasswordScreen() {
 		setError(null);
 
 		try {
-			// For demo purposes, we'll simulate a successful password reset after a short delay
-			setTimeout(() => {
-				setSuccess(true);
-			}, 1500);
-		} catch (error) {
-			console.error("Password reset error:", error);
-			setError("Password reset failed. Please try again.");
+			await authClient.forgetPassword({
+				email,
+				redirectTo: "/(auth)/login",
+			});
+
+			setSuccess(true);
+		} catch (err: unknown) {
+			setError(err instanceof Error ? err.message : "Password reset failed. Please try again.");
 		} finally {
 			setLoading(false);
 		}

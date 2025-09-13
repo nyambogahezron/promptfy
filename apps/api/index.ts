@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import { log } from "@repo/logger";
 import connectDB from "./config/connectDB";
 import { createServer } from "./server";

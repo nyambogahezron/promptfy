@@ -6,26 +6,22 @@ import CustomError from "../errors/customError";
 import Prompt from "../models/Prompt";
 import User from "../models/User";
 
-// Types
 interface AuthRequest extends Request {
 	user?: {
-		userId: string;
+		id: string;
 		name: string;
+		email: string;
 		role: string;
+		emailVerified: boolean;
 	};
 }
 
-/**
- * Controller for sharing and collaboration features
- */
-
-// Make a prompt public
 export const makePromptPublic = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		userId: req.user?.userId,
+		id: req.user?.id,
 	});
 
 	if (!prompt) {
@@ -35,7 +31,6 @@ export const makePromptPublic = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Generate a unique slug if not already set
 	if (!prompt.publicSlug) {
 		const slug = crypto.randomBytes(8).toString("hex");
 		prompt.publicSlug = slug;
@@ -51,13 +46,12 @@ export const makePromptPublic = async (req: AuthRequest, res: Response) => {
 	});
 };
 
-// Make a prompt private
 export const makePromptPrivate = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		userId: req.user?.userId,
+		id: req.user?.id,
 	});
 
 	if (!prompt) {
@@ -76,14 +70,13 @@ export const makePromptPrivate = async (req: AuthRequest, res: Response) => {
 	});
 };
 
-// Get a public prompt by slug
 export const getPublicPrompt = async (req: Request, res: Response) => {
 	const { slug } = req.params;
 
 	const prompt = await Prompt.findOne({
 		publicSlug: slug,
 		isPublic: true,
-	}).populate("userId", "name");
+	}).populate("id", "name");
 
 	if (!prompt) {
 		throw new CustomError({
@@ -95,13 +88,11 @@ export const getPublicPrompt = async (req: Request, res: Response) => {
 	res.status(StatusCodes.OK).json({ prompt });
 };
 
-// List all public prompts with pagination and filters
 export const listPublicPrompts = async (req: Request, res: Response) => {
 	const { category, tags, search, page = 1, limit = 10 } = req.query;
 
 	const queryObject: Record<string, unknown> = { isPublic: true };
 
-	// Apply filters
 	if (category) {
 		queryObject.category = category;
 	}
@@ -120,7 +111,7 @@ export const listPublicPrompts = async (req: Request, res: Response) => {
 	const skip = (Number(page) - 1) * Number(limit);
 
 	const prompts = await Prompt.find(queryObject)
-		.populate("userId", "name")
+		.populate("id", "name")
 		.sort({ createdAt: -1 })
 		.skip(skip)
 		.limit(Number(limit));
@@ -135,7 +126,6 @@ export const listPublicPrompts = async (req: Request, res: Response) => {
 	});
 };
 
-// Add collaborator to a prompt
 export const addCollaborator = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 	const { email, role } = req.body;
@@ -147,10 +137,9 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Find prompt
 	const prompt = await Prompt.findOne({
 		_id: id,
-		userId: req.user?.userId,
+		id: req.user?.id,
 	});
 
 	if (!prompt) {
@@ -160,7 +149,6 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Find user by email
 	const user = await User.findOne({ email });
 
 	if (!user) {
@@ -170,7 +158,6 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Check if user is already a collaborator
 	const existingCollaborator = prompt.collaborators.find(
 		(collab) => collab.userId.toString() === (user._id as mongoose.Types.ObjectId).toString()
 	);
@@ -182,7 +169,6 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Check if user is the owner
 	if ((user._id as mongoose.Types.ObjectId).toString() === prompt.userId.toString()) {
 		throw new CustomError({
 			message: "You cannot add the owner as a collaborator",
@@ -190,7 +176,6 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Add as collaborator
 	prompt.collaborators.push({
 		userId: user._id as mongoose.Schema.Types.ObjectId,
 		role: role as "editor" | "viewer",
@@ -205,13 +190,12 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
 	});
 };
 
-// Remove collaborator from a prompt
 export const removeCollaborator = async (req: AuthRequest, res: Response) => {
-	const { id, userId } = req.params;
+	const { id } = req.params;
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		userId: req.user?.userId,
+		id: req.user?.id,
 	});
 
 	if (!prompt) {
@@ -221,9 +205,8 @@ export const removeCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Find collaborator index
 	const collaboratorIndex = prompt.collaborators.findIndex(
-		(collab) => collab.userId.toString() === userId
+		(collab) => collab.userId.toString() === id
 	);
 
 	if (collaboratorIndex === -1) {
@@ -233,7 +216,6 @@ export const removeCollaborator = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Remove collaborator
 	prompt.collaborators.splice(collaboratorIndex, 1);
 	await prompt.save();
 
@@ -243,9 +225,8 @@ export const removeCollaborator = async (req: AuthRequest, res: Response) => {
 	});
 };
 
-// Update collaborator role
 export const updateCollaboratorRole = async (req: AuthRequest, res: Response) => {
-	const { id, userId } = req.params;
+	const { id } = req.params;
 	const { role } = req.body;
 
 	if (!role || !["editor", "viewer"].includes(role)) {
@@ -257,7 +238,7 @@ export const updateCollaboratorRole = async (req: AuthRequest, res: Response) =>
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		userId: req.user?.userId,
+		id: req.user?.id,
 	});
 
 	if (!prompt) {
@@ -267,8 +248,7 @@ export const updateCollaboratorRole = async (req: AuthRequest, res: Response) =>
 		});
 	}
 
-	// Find collaborator
-	const collaborator = prompt.collaborators.find((collab) => collab.userId.toString() === userId);
+	const collaborator = prompt.collaborators.find((collab) => collab.userId.toString() === id);
 
 	if (!collaborator) {
 		throw new CustomError({
@@ -277,7 +257,6 @@ export const updateCollaboratorRole = async (req: AuthRequest, res: Response) =>
 		});
 	}
 
-	// Update role
 	collaborator.role = role as "editor" | "viewer";
 	await prompt.save();
 
@@ -287,12 +266,11 @@ export const updateCollaboratorRole = async (req: AuthRequest, res: Response) =>
 	});
 };
 
-// Get prompts shared with user
 export const getSharedPrompts = async (req: AuthRequest, res: Response) => {
 	const prompts = await Prompt.find({
-		"collaborators.userId": req.user?.userId,
+		"collaborators.userId": req.user?.id,
 	})
-		.populate("userId", "name email")
+		.populate("id", "name email")
 		.sort({ updatedAt: -1 });
 
 	res.status(StatusCodes.OK).json({
@@ -301,7 +279,6 @@ export const getSharedPrompts = async (req: AuthRequest, res: Response) => {
 	});
 };
 
-// Add a new version to version history
 export const addVersion = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 	const { prompt, notes } = req.body;
@@ -313,15 +290,14 @@ export const addVersion = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Find prompt document
 	const promptDoc = await Prompt.findOne({
 		_id: id,
 		$or: [
-			{ userId: req.user?.userId },
+			{ userId: req.user?.id },
 			{
 				collaborators: {
 					$elemMatch: {
-						userId: req.user?.userId,
+						id: req.user?.id,
 						role: "editor",
 					},
 				},
@@ -336,7 +312,6 @@ export const addVersion = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Get next version number
 	const latestVersion =
 		promptDoc.versionHistory.length > 0
 			? Math.max(...promptDoc.versionHistory.map((v) => v.version))
@@ -344,18 +319,16 @@ export const addVersion = async (req: AuthRequest, res: Response) => {
 
 	const newVersion = latestVersion + 1;
 
-	// Add version to history
 	promptDoc.versionHistory.push({
 		version: newVersion,
 		prompt,
 		updatedBy: new mongoose.Types.ObjectId(
-			String(req.user?.userId)
+			String(req.user?.id)
 		) as unknown as mongoose.Schema.Types.ObjectId,
 		updatedAt: new Date(),
 		notes,
 	});
 
-	// Update current prompt if requested
 	if (req.body.updateCurrent) {
 		promptDoc.generatedPrompt = prompt;
 	}
@@ -369,13 +342,12 @@ export const addVersion = async (req: AuthRequest, res: Response) => {
 	});
 };
 
-// Get version history
 export const getVersionHistory = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		$or: [{ userId: req.user?.userId }, { "collaborators.userId": req.user?.userId }],
+		$or: [{ userId: req.user?.id }, { "collaborators.userId": req.user?.id }],
 	}).populate("versionHistory.updatedBy", "name email");
 
 	if (!prompt) {

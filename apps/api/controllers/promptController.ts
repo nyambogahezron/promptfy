@@ -8,9 +8,11 @@ import GeminiService from "../services/geminiService";
 // Types
 interface AuthRequest extends Request {
 	user?: {
-		userId: string;
+		id: string;
 		name: string;
+		email: string;
 		role: string;
+		emailVerified: boolean;
 	};
 }
 
@@ -38,9 +40,9 @@ export const getTemplateById = async (req: Request, res: Response) => {
 };
 
 export const createTemplate = async (req: AuthRequest, res: Response) => {
-	// Add user ID to request body
-	req.body.createdBy = req.user?.userId;
-	req.body.isDefault = false; // User-created templates aren't default
+	//
+	req.body.createdBy = req.user?.id;
+	req.body.isDefault = false;
 
 	const template = await PromptTemplate.create(req.body);
 	res.status(StatusCodes.CREATED).json({ template });
@@ -50,7 +52,6 @@ export const updateTemplate = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 	const { name, description, template, category } = req.body;
 
-	// Find the template
 	const promptTemplate = await PromptTemplate.findById(id);
 
 	if (!promptTemplate) {
@@ -60,8 +61,6 @@ export const updateTemplate = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Check permissions - only allow updates to templates created by the user
-	// or if user is an admin
 	if (promptTemplate.isDefault && req.user?.role !== "admin") {
 		throw new CustomError({
 			message: "Not authorized to update default templates",
@@ -71,7 +70,7 @@ export const updateTemplate = async (req: AuthRequest, res: Response) => {
 
 	if (
 		promptTemplate.createdBy &&
-		promptTemplate.createdBy.toString() !== req.user?.userId &&
+		promptTemplate.createdBy.toString() !== req.user?.id &&
 		req.user?.role !== "admin"
 	) {
 		throw new CustomError({
@@ -80,7 +79,6 @@ export const updateTemplate = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Update the template
 	promptTemplate.name = name || promptTemplate.name;
 	promptTemplate.description = description || promptTemplate.description;
 	promptTemplate.template = template || promptTemplate.template;
@@ -102,8 +100,6 @@ export const deleteTemplate = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Check permissions - only allow deletion of templates created by the user
-	// or if user is an admin
 	if (template.isDefault && req.user?.role !== "admin") {
 		throw new CustomError({
 			message: "Not authorized to delete default templates",
@@ -113,7 +109,7 @@ export const deleteTemplate = async (req: AuthRequest, res: Response) => {
 
 	if (
 		template.createdBy &&
-		template.createdBy.toString() !== req.user?.userId &&
+		template.createdBy.toString() !== req.user?.id &&
 		req.user?.role !== "admin"
 	) {
 		throw new CustomError({
@@ -132,7 +128,6 @@ export const deleteTemplate = async (req: AuthRequest, res: Response) => {
 export const generatePrompt = async (req: AuthRequest, res: Response) => {
 	const { title, userInstructions, templateId, category, tags } = req.body;
 
-	// Validate input
 	if (!title || !userInstructions || !templateId || !category) {
 		throw new CustomError({
 			message: "Please provide title, user instructions, template ID, and category",
@@ -140,7 +135,6 @@ export const generatePrompt = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Find the template
 	const promptTemplate = await PromptTemplate.findById(templateId);
 
 	if (!promptTemplate) {
@@ -151,14 +145,12 @@ export const generatePrompt = async (req: AuthRequest, res: Response) => {
 	}
 
 	try {
-		// Generate the prompt using Gemini
 		const geminiService = new GeminiService();
 		const generatedPrompt = await geminiService.generatePrompt(
 			userInstructions,
 			promptTemplate.template
 		);
 
-		// Create a new prompt record
 		const prompt = await Prompt.create({
 			title,
 			content: promptTemplate.template,
@@ -166,7 +158,7 @@ export const generatePrompt = async (req: AuthRequest, res: Response) => {
 			generatedPrompt,
 			category,
 			tags: tags || [],
-			userId: req.user?.userId,
+			id: req.user?.id,
 		});
 
 		res.status(StatusCodes.CREATED).json({
@@ -183,8 +175,7 @@ export const generatePrompt = async (req: AuthRequest, res: Response) => {
 };
 
 export const getUserPrompts = async (req: AuthRequest, res: Response) => {
-	// Find prompts where user is owner but not including ones where they're just a collaborator
-	const ownedPrompts = await Prompt.find({ userId: req.user?.userId }).sort({
+	const ownedPrompts = await Prompt.find({ userId: req.user?.id }).sort({
 		createdAt: -1,
 	});
 
@@ -199,7 +190,7 @@ export const getPromptById = async (req: AuthRequest, res: Response) => {
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		$or: [{ userId: req.user?.userId }, { "collaborators.userId": req.user?.userId }],
+		$or: [{ userId: req.user?.id }, { "collaborators.userId": req.user?.id }],
 	});
 
 	if (!prompt) {
@@ -209,10 +200,9 @@ export const getPromptById = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Determine user role
 	let userRole = "owner";
-	if (prompt.userId.toString() !== req.user?.userId) {
-		const collaborator = prompt.collaborators.find((c) => c.userId.toString() === req.user?.userId);
+	if (prompt.userId.toString() !== req.user?.id) {
+		const collaborator = prompt.collaborators.find((c) => c.userId.toString() === req.user?.id);
 		userRole = collaborator ? collaborator.role : "none";
 	}
 
@@ -226,15 +216,14 @@ export const updatePrompt = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 	const { title, category, tags } = req.body;
 
-	// Find prompt by id and check if user is owner or editor collaborator
 	const prompt = await Prompt.findOne({
 		_id: id,
 		$or: [
-			{ userId: req.user?.userId },
+			{ userId: req.user?.id },
 			{
 				collaborators: {
 					$elemMatch: {
-						userId: req.user?.userId,
+						id: req.user?.id,
 						role: "editor",
 					},
 				},
@@ -249,7 +238,6 @@ export const updatePrompt = async (req: AuthRequest, res: Response) => {
 		});
 	}
 
-	// Update only allowed fields
 	prompt.title = title || prompt.title;
 	prompt.category = category || prompt.category;
 	prompt.tags = tags || prompt.tags;
@@ -276,11 +264,11 @@ export const enhancePrompt = async (req: AuthRequest, res: Response) => {
 	const prompt = await Prompt.findOne({
 		_id: id,
 		$or: [
-			{ userId: req.user?.userId },
+			{ userId: req.user?.id },
 			{
 				collaborators: {
 					$elemMatch: {
-						userId: req.user?.userId,
+						id: req.user?.id,
 						role: "editor",
 					},
 				},
@@ -296,14 +284,12 @@ export const enhancePrompt = async (req: AuthRequest, res: Response) => {
 	}
 
 	try {
-		// Enhance the prompt using Gemini
 		const geminiService = new GeminiService();
 		const enhancedPrompt = await geminiService.enhancePrompt(
 			prompt.generatedPrompt,
 			enhancementRequest
 		);
 
-		// Update the prompt
 		prompt.generatedPrompt = enhancedPrompt;
 		await prompt.save();
 
@@ -325,7 +311,7 @@ export const analyzePrompt = async (req: AuthRequest, res: Response) => {
 
 	const prompt = await Prompt.findOne({
 		_id: id,
-		$or: [{ userId: req.user?.userId }, { "collaborators.userId": req.user?.userId }],
+		$or: [{ userId: req.user?.id }, { "collaborators.userId": req.user?.id }],
 	});
 
 	if (!prompt) {
@@ -336,7 +322,6 @@ export const analyzePrompt = async (req: AuthRequest, res: Response) => {
 	}
 
 	try {
-		// Analyze the prompt using Gemini
 		const geminiService = new GeminiService();
 		const analysis = await geminiService.analyzePrompt(prompt.generatedPrompt);
 
@@ -356,10 +341,9 @@ export const analyzePrompt = async (req: AuthRequest, res: Response) => {
 export const deletePrompt = async (req: AuthRequest, res: Response) => {
 	const { id } = req.params;
 
-	// Only the owner can delete a prompt
 	const prompt = await Prompt.findOne({
 		_id: id,
-		userId: req.user?.userId,
+		id: req.user?.id,
 	});
 
 	if (!prompt) {

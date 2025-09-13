@@ -1,4 +1,4 @@
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { ArrowRight, Lock, Mail, User } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -15,7 +15,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { colors } from "@/constants/Colors";
 import { statusBarHeight } from "@/constants/Layout";
-import { useAuthStore } from "@/store/authStore";
+import { signUp } from "@/lib/auth-client";
 import { useThemeStore } from "@/store/themeStore";
 
 export default function RegisterScreen() {
@@ -24,10 +24,9 @@ export default function RegisterScreen() {
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState(false);
 
-	const { register } = useAuthStore();
 	const { theme } = useThemeStore();
-	const router = useRouter();
 
 	const isDark = theme === "dark";
 	const colorScheme = isDark ? colors.dark : colors.light;
@@ -53,25 +52,37 @@ export default function RegisterScreen() {
 		setError(null);
 
 		try {
-			// For demo purposes, we'll simulate a successful registration after a short delay
-			setTimeout(() => {
-				// Success
-				register({
-					id: "1",
-					email,
-					name,
-					token: "fake-jwt-token-123456789",
-				});
+			await signUp.email({
+				email,
+				password,
+				name,
+			});
 
-				router.replace("/(home)");
-			}, 1500);
-		} catch (error) {
-			console.error("Registration error:", error);
-			setError("Registration failed. Please try again.");
+			setSuccess(true);
+		} catch (err: unknown) {
+			setError(err instanceof Error ? err.message : "Registration failed");
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	if (success) {
+		return (
+			<View style={[styles.container, { backgroundColor: colorScheme.background }]}>
+				<View style={styles.successContainer}>
+					<Text style={[styles.successTitle, { color: colorScheme.text }]}>Account Created!</Text>
+					<Text style={[styles.successText, { color: colorScheme.secondaryText }]}>
+						Please check your email to verify your account before signing in.
+					</Text>
+					<Link href="/(auth)/login" asChild>
+						<TouchableOpacity style={[styles.button, { backgroundColor: colorScheme.primary }]}>
+							<Text style={styles.buttonText}>Go to Sign In</Text>
+						</TouchableOpacity>
+					</Link>
+				</View>
+			</View>
+		);
+	}
 
 	return (
 		<KeyboardAvoidingView
@@ -86,7 +97,7 @@ export default function RegisterScreen() {
 				<Animated.View entering={FadeIn.delay(300).duration(1000)} style={styles.header}>
 					<Text style={[styles.title, { color: colorScheme.text }]}>Create Account</Text>
 					<Text style={[styles.subtitle, { color: colorScheme.secondaryText }]}>
-						Sign up to start generating AI prompts
+						Join us to start generating amazing AI prompts
 					</Text>
 				</Animated.View>
 
@@ -114,7 +125,6 @@ export default function RegisterScreen() {
 							placeholderTextColor={colorScheme.secondaryText}
 							value={name}
 							onChangeText={setName}
-							autoCapitalize="words"
 						/>
 					</View>
 
@@ -176,13 +186,13 @@ export default function RegisterScreen() {
 						)}
 					</TouchableOpacity>
 
-					<View style={styles.signupContainer}>
-						<Text style={[styles.signupText, { color: colorScheme.secondaryText }]}>
+					<View style={styles.signinContainer}>
+						<Text style={[styles.signinText, { color: colorScheme.secondaryText }]}>
 							Already have an account?
 						</Text>
 						<Link href="/(auth)/login" asChild>
 							<TouchableOpacity>
-								<Text style={[styles.signupLink, { color: colorScheme.primary }]}>Sign In</Text>
+								<Text style={[styles.signinLink, { color: colorScheme.primary }]}>Sign In</Text>
 							</TouchableOpacity>
 						</Link>
 					</View>
@@ -201,6 +211,25 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		justifyContent: "center",
 		padding: 24,
+	},
+	successContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		padding: 24,
+	},
+	successTitle: {
+		fontSize: 24,
+		fontFamily: "Inter-Bold",
+		marginBottom: 16,
+		textAlign: "center",
+	},
+	successText: {
+		fontSize: 16,
+		fontFamily: "Inter-Regular",
+		lineHeight: 24,
+		textAlign: "center",
+		marginBottom: 32,
 	},
 	header: {
 		marginBottom: 32,
@@ -260,17 +289,17 @@ const styles = StyleSheet.create({
 		fontFamily: "Inter-Medium",
 		marginRight: 8,
 	},
-	signupContainer: {
+	signinContainer: {
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	signupText: {
+	signinText: {
 		fontSize: 14,
 		fontFamily: "Inter-Regular",
 		marginRight: 4,
 	},
-	signupLink: {
+	signinLink: {
 		fontSize: 14,
 		fontFamily: "Inter-Medium",
 	},

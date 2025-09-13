@@ -1,5 +1,5 @@
 import { Link, useRouter } from "expo-router";
-import { ArrowRight, Github, Lock, Mail, Twitter } from "lucide-react-native";
+import { ArrowRight, Github, Globe, Lock, Mail } from "lucide-react-native";
 import { useState } from "react";
 import {
 	ActivityIndicator,
@@ -15,7 +15,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { colors } from "@/constants/Colors";
 import { statusBarHeight } from "@/constants/Layout";
-import { useAuthStore } from "@/store/authStore";
+import { signIn } from "@/lib/auth-client";
 import { useThemeStore } from "@/store/themeStore";
 
 export default function LoginScreen() {
@@ -24,7 +24,6 @@ export default function LoginScreen() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const { login } = useAuthStore();
 	const { theme } = useThemeStore();
 	const router = useRouter();
 
@@ -47,29 +46,30 @@ export default function LoginScreen() {
 		setError(null);
 
 		try {
-			// For demo purposes, we'll simulate a successful login after a short delay
-			setTimeout(() => {
-				// Success
-				login({
-					id: "1",
-					email,
-					name: "John Doe",
-					token: "fake-jwt-token-123456789",
-				});
+			await signIn.email({
+				email,
+				password,
+			});
 
-				router.replace("/(home)");
-			}, 1500);
-		} catch (error) {
-			console.error("Login error:", error);
-			setError("Invalid email or password. Please try again.");
+			// On successful login, redirect to home
+			router.replace("/(home)");
+		} catch (err: unknown) {
+			setError(err instanceof Error ? err.message : "Login failed");
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handleSocialLogin = (provider: string) => {
+	const handleSocialLogin = async (provider: "google" | "github") => {
 		setError(null);
-		alert(`${provider} login not implemented yet`);
+		try {
+			await signIn.social({
+				provider,
+				callbackURL: "/(home)", // this will be converted to a deep link (eg. `myapp://(home)`) on native
+			});
+		} catch (err: unknown) {
+			setError(err instanceof Error ? err.message : `${provider} login failed`);
+		}
 	};
 
 	return (
@@ -181,7 +181,7 @@ export default function LoginScreen() {
 									borderColor: colorScheme.border,
 								},
 							]}
-							onPress={() => handleSocialLogin("GitHub")}
+							onPress={() => handleSocialLogin("github")}
 						>
 							<Github size={22} color={colorScheme.text} />
 						</TouchableOpacity>
@@ -193,9 +193,9 @@ export default function LoginScreen() {
 									borderColor: colorScheme.border,
 								},
 							]}
-							onPress={() => handleSocialLogin("Twitter")}
+							onPress={() => handleSocialLogin("google")}
 						>
-							<Twitter size={22} color={colorScheme.text} />
+							<Globe size={22} color={colorScheme.text} />
 						</TouchableOpacity>
 					</View>
 

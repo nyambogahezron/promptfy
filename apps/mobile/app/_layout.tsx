@@ -9,7 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import * as systemUI from "expo-system-ui";
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
-import { useFrameworkReady } from "@/hooks/useFrameworkReady";
+import { AuthProvider } from "@/hooks/use-better-auth";
 import { useThemeStore } from "@/store/themeStore";
 import "react-native-gesture-handler";
 
@@ -20,8 +20,6 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 export default function RootLayout() {
-	useFrameworkReady();
-
 	const colorScheme = useColorScheme();
 	const { theme, setTheme } = useThemeStore();
 
@@ -48,13 +46,13 @@ export default function RootLayout() {
 	}
 
 	return (
-		<>
+		<AuthProvider>
 			<Stack screenOptions={{ headerShown: false }}>
 				<Stack.Screen name="(auth)" options={{ headerShown: false }} />
 				<Stack.Screen name="(home)" options={{ headerShown: false }} />
 				<Stack.Screen name="+not-found" options={{ title: "Not Found" }} />
 			</Stack>
 			<StatusBar style={theme === "dark" ? "light" : "dark"} />
-		</>
+		</AuthProvider>
 	);
 }

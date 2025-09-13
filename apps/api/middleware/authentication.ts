@@ -1,44 +1,51 @@
 import type { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import jwt from "jsonwebtoken";
 import CustomError from "../errors/customError";
+import { auth } from "../lib/auth";
 
-interface DecodedToken {
-	userId: string;
-	name: string;
-	role: string;
-}
-
-interface AuthRequest extends Request {
-	user?: {
-		userId: string;
-		name: string;
-		role: string;
-	};
-}
-
-export const authenticateUser = async (req: AuthRequest, _res: Response, next: NextFunction) => {
-	const authHeader = req.headers.authorization;
-
-	if (!authHeader || !authHeader.startsWith("Bearer ")) {
-		throw new CustomError({
-			message: "Authentication invalid",
-			statusCode: StatusCodes.UNAUTHORIZED,
-		});
+declare global {
+	namespace Express {
+		interface Request {
+			user?: {
+				id: string;
+				name: string;
+				email: string;
+				role: string;
+				emailVerified: boolean;
+			};
+		}
 	}
+}
 
-	const token = authHeader.split(" ")[1];
-
+export const authenticateUser = async (req: Request, _res: Response, next: NextFunction) => {
 	try {
-		const secret = process.env.JWT_SECRET;
-		if (!secret) throw new Error("Missing JWT secret");
-		const decoded = jwt.verify(token, secret) as DecodedToken;
+		const session = await auth.api.getSession({
+			headers: new Headers(req.headers as Record<string, string>),
+		});
+
+		if (!session) {
+			throw new CustomError({
+				message: "Authentication required",
+				statusCode: StatusCodes.UNAUTHORIZED,
+			});
+		}
+
+		const userWithRole = session.user as {
+			id: string;
+			name: string;
+			email: string;
+			emailVerified: boolean;
+			role?: string;
+		};
 
 		req.user = {
-			userId: decoded.userId,
-			name: decoded.name,
-			role: decoded.role,
+			id: userWithRole.id,
+			name: userWithRole.name,
+			email: userWithRole.email,
+			role: userWithRole.role || "user",
+			emailVerified: userWithRole.emailVerified,
 		};
+
 		next();
 	} catch (_error) {
 		throw new CustomError({
@@ -49,10 +56,10 @@ export const authenticateUser = async (req: AuthRequest, _res: Response, next: N
 };
 
 export const authorizePermissions = (...roles: string[]) => {
-	return (req: AuthRequest, _res: Response, next: NextFunction) => {
+	return (req: Request, _res: Response, next: NextFunction) => {
 		if (!req.user) {
 			throw new CustomError({
-				message: "Authentication invalid",
+				message: "Authentication required",
 				statusCode: StatusCodes.UNAUTHORIZED,
 			});
 		}
@@ -63,6 +70,7 @@ export const authorizePermissions = (...roles: string[]) => {
 				statusCode: StatusCodes.FORBIDDEN,
 			});
 		}
+
 		next();
 	};
 };

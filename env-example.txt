@@ -1,0 +1,28 @@
+# Database
+MONGO_URI=mongodb://localhost:27017/promptfy
+
+# JWT
+JWT_SECRET=your-jwt-secret-here
+JWT_LIFETIME=1d
+
+# Better Auth
+BETTER_AUTH_SECRET=your-better-auth-secret-here-should-be-at-least-32-characters
+BETTER_AUTH_URL=http://localhost:3001
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# Email Service (if using)
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-email-password
+EMAIL_FROM=your-app@example.com
+
+# Gemini AI (if using)
+GEMINI_API_KEY=your-gemini-api-key

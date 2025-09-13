@@ -17,14 +17,12 @@ import { authenticateUser } from "../middleware/authentication";
 
 const router = express.Router();
 
-// Template routes
 router.get("/templates", authenticateUser, getAllTemplates);
 router.get("/templates/:id", authenticateUser, getTemplateById);
 router.post("/templates", authenticateUser, createTemplate);
 router.patch("/templates/:id", authenticateUser, updateTemplate);
 router.delete("/templates/:id", authenticateUser, deleteTemplate);
 
-// Prompt generation routes
 router.post("/generate", authenticateUser, generatePrompt);
 router.get("/user", authenticateUser, getUserPrompts);
 router.get("/:id", authenticateUser, getPromptById);

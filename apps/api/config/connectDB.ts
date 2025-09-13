@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
-export default async function connectDB(url: string): Promise<typeof mongoose> {
+const connectDB = (url: string) => {
 	return mongoose.connect(url);
 }
+
+export default connectDB;

@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AuthProvider } from "@/components/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
@@ -62,8 +63,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
-					<Toaster />
+					<AuthProvider>
+						{children}
+						<Toaster />
+					</AuthProvider>
 				</ThemeProvider>
 			</body>
 		</html>
