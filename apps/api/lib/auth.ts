@@ -4,7 +4,7 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 import { sendResetPasswordEmail, sendVerificationEmail } from "../services/emailService";
 
-const client = new MongoClient(process.env.MONGO_URL || '');
+const client = new MongoClient(process.env.MONGO_URL || "");
 const db = client.db();
 
 export const auth = betterAuth({

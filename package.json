@@ -1,62 +1,65 @@
 {
-	"name": "repo",
-	"private": true,
-	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"dev:mobile": "turbo run dev --filter=mobile",
-		"dev:web": "turbo run dev --filter=web",
-		"dev:api": "turbo run dev --filter=api",
-		"start:mobile": "turbo run start --filter=mobile",
-		"start:web": "turbo run start --filter=web",
-		"start:api": "turbo run start --filter=api",
-		"build:mobile": "turbo run build --filter=mobile",
-		"build:web": "turbo run build --filter=web",
-		"build:api": "turbo run build --filter=api",
-		"cleanup": "./scripts/cleanup.sh",
-		"pre-commit": "./scripts/pre-commit.sh",
-		"format": "biome format --write .",
-		"format:check": "biome format .",
-		"lint": "turbo run lint",
-		"lint:fix": "biome lint --write .",
-		"check": "biome check .",
-		"check:fix": "biome check --write .",
-		"test": "turbo run test",
-		"check-types": "turbo run check-types",
-		"prepare": "husky"
-	},
-	"lint-staged": {
-		"**/*.{js,jsx,ts,tsx}": [
-			"biome check --write --no-errors-on-unmatched"
-		],
-		"**/*.{json,jsonc}": [
-			"biome format --write --no-errors-on-unmatched"
-		],
-		"**/*.{md,yaml,yml}": [
-			"biome format --write --no-errors-on-unmatched"
-		]
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.2",
-		"@types/jest": "^30.0.0",
-		"@types/minimatch": "^6.0.0",
-		"@types/node": "^24.3.0",
-		"husky": "^9.1.7",
-		"lint-staged": "^16.1.5",
-		"turbo": "^2.5.6"
-	},
-	"overrides": {
-		"react": "19.0.0",
-		"react-dom": "19.0.0",
-		"typescript": "5.8.3",
-		"@types/react": "19.0.10"
-	},
-	"engines": {
-		"node": ">=18"
-	},
-	"packageManager": "bun@1.2.19",
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	]
+  "name": "repo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:mobile": "turbo run dev --filter=mobile",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:api": "turbo run dev --filter=api",
+    "start:mobile": "turbo run start --filter=mobile",
+    "start:web": "turbo run start --filter=web",
+    "start:api": "turbo run start --filter=api",
+    "build:mobile": "turbo run build --filter=mobile",
+    "build:web": "turbo run build --filter=web",
+    "build:api": "turbo run build --filter=api",
+    "cleanup": "./scripts/cleanup.sh",
+    "pre-commit": "./scripts/pre-commit.sh",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "turbo run lint",
+    "lint:fix": "biome lint --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "test": "turbo run test",
+    "check-types": "turbo run check-types",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "biome check --write --no-errors-on-unmatched"
+    ],
+    "**/*.{json,jsonc}": [
+      "biome format --write --no-errors-on-unmatched"
+    ],
+    "**/*.{md,yaml,yml}": [
+      "biome format --write --no-errors-on-unmatched"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@types/jest": "^30.0.0",
+    "@types/minimatch": "^6.0.0",
+    "@types/node": "20.6.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "turbo": "^2.5.6"
+  },
+  "overrides": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "typescript": "5.9.2",
+    "@types/react": "19.1.10"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "bun@1.2.19",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "workspace-version-aligner": "^1.0.1"
+  }
 }

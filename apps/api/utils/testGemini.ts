@@ -1,21 +1,19 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
-import GeminiService from '../services/geminiService';
+import GeminiService from "../services/geminiService";
 
 /**
  * Simple utility to test the Gemini service
  */
 async function testGeminiService() {
 	try {
-		console.log('Testing Gemini service...');
+		console.log("Testing Gemini service...");
 
 		// Check if API key is set
 		if (!process.env.GEMINI_API_KEY) {
-			console.error(
-				'Error: GEMINI_API_KEY is not defined in environment variables'
-			);
+			console.error("Error: GEMINI_API_KEY is not defined in environment variables");
 			process.exit(1);
 		}
 
@@ -28,28 +26,25 @@ async function testGeminiService() {
 5. Format: [How the response should be structured]`;
 
 		const mockUserInstructions =
-			'I need a prompt that helps me write a compelling cover letter for a software developer position at a tech startup.';
+			"I need a prompt that helps me write a compelling cover letter for a software developer position at a tech startup.";
 
 		// Initialize the service
-		console.log('Initializing GeminiService...');
+		console.log("Initializing GeminiService...");
 		const geminiService = new GeminiService();
 
 		// Generate a prompt
-		console.log('Generating prompt...');
-		const generatedPrompt = await geminiService.generatePrompt(
-			mockUserInstructions,
-			mockTemplate
-		);
+		console.log("Generating prompt...");
+		const generatedPrompt = await geminiService.generatePrompt(mockUserInstructions, mockTemplate);
 
-		console.log('\n--- Generated Prompt ---\n');
+		console.log("\n--- Generated Prompt ---\n");
 		console.log(generatedPrompt);
-		console.log('\n------------------------\n');
+		console.log("\n------------------------\n");
 
-		console.log('Test completed successfully!');
+		console.log("Test completed successfully!");
 		process.exit(0);
 	} catch (error: unknown) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		console.error('Error testing Gemini service:', errorMessage);
+		console.error("Error testing Gemini service:", errorMessage);
 		process.exit(1);
 	}
 }

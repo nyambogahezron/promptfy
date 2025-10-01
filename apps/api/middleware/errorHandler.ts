@@ -1,6 +1,6 @@
-import type { NextFunction, Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import CustomError from '../errors/customError.js';
+import type { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import CustomError from "../errors/customError.js";
 
 export const errorHandlerMiddleware = (
 	err: unknown,
@@ -10,13 +10,10 @@ export const errorHandlerMiddleware = (
 ): Response => {
 	console.error(err);
 
-	const defaultMsg = 'Something went wrong, please try again later';
+	const defaultMsg = "Something went wrong, please try again later";
 
 	const customError = {
-		statusCode:
-			err instanceof CustomError
-				? err.statusCode
-				: StatusCodes.INTERNAL_SERVER_ERROR,
+		statusCode: err instanceof CustomError ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR,
 		msg: err instanceof Error ? err.message : defaultMsg,
 	};
 
@@ -28,11 +25,11 @@ export const errorHandlerMiddleware = (
 		value?: unknown;
 	};
 
-	if (e?.name === 'ValidationError') {
+	if (e?.name === "ValidationError") {
 		const errors = e.errors ?? {};
 		customError.msg = Object.values(errors)
 			.map((item) => item?.message ?? String(item))
-			.join(', ');
+			.join(", ");
 		customError.statusCode = StatusCodes.BAD_REQUEST;
 	}
 
@@ -44,7 +41,7 @@ export const errorHandlerMiddleware = (
 		customError.statusCode = StatusCodes.BAD_REQUEST;
 	}
 
-	if (e?.name === 'CastError') {
+	if (e?.name === "CastError") {
 		customError.msg = `No item found with id: ${String(e.value)}`;
 		customError.statusCode = StatusCodes.NOT_FOUND;
 	}

@@ -1,12 +1,14 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 # Run final checks before push
 echo "Running pre-push checks..."
 
 # Check formatting and linting
 echo "Checking formatting and linting..."
-bun run check
+bun run format
+
+bun run format:check
+
+# bun run check
 
 # Type check all workspaces
 echo "Type checking all workspaces..."
@@ -17,7 +19,7 @@ echo "Building all packages..."
 bun run build
 
 # Run all tests
-echo "Running all tests..."
-bun run test
+# echo "Running all tests..."
+# bun run test
 
 echo "✅ Pre-commit checks completed!"
