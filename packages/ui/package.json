@@ -1,61 +1,61 @@
 {
-  "name": "@repo/ui",
-  "version": "0.0.0",
-  "private": true,
-  "license": "MIT",
-  "sideEffects": false,
-  "files": [
-    "dist/**",
-    "dist"
-  ],
-  "exports": {
-    "./counter-button": {
-      "import": {
-        "types": "./dist/es/counter-button.d.mts",
-        "default": "./dist/es/counter-button.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/counter-button.d.ts",
-        "default": "./dist/cjs/counter-button.js"
-      }
-    },
-    "./link": {
-      "import": {
-        "types": "./dist/es/link.d.mts",
-        "default": "./dist/es/link.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/link.d.ts",
-        "default": "./dist/cjs/link.js"
-      }
-    }
-  },
-  "scripts": {
-    "build": "bunchee",
-    "dev": "bunchee --watch",
-    "check-types": "tsc --noEmit",
-    "lint": "biome lint src/",
-    "lint:fix": "biome lint --write src/",
-    "format": "biome format --write src/",
-    "check": "biome check src/",
-    "test": "jest"
-  },
-  "jest": {
-    "preset": "@repo/jest-presets/browser"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@repo/jest-presets": "*",
-    "@repo/typescript-config": "*",
-    "@types/node": "20.6.2",
-    "bunchee": "^6.4.0",
-    "jest": "^29.7.0",
-    "typescript": "~5.9.2"
-  },
-  "peerDependencies": {
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.1.9",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
-  }
+	"name": "@repo/ui",
+	"version": "0.0.0",
+	"private": true,
+	"license": "MIT",
+	"sideEffects": false,
+	"files": [
+		"dist/**",
+		"dist"
+	],
+	"exports": {
+		"./counter-button": {
+			"import": {
+				"types": "./dist/es/counter-button.d.mts",
+				"default": "./dist/es/counter-button.mjs"
+			},
+			"require": {
+				"types": "./dist/cjs/counter-button.d.ts",
+				"default": "./dist/cjs/counter-button.js"
+			}
+		},
+		"./link": {
+			"import": {
+				"types": "./dist/es/link.d.mts",
+				"default": "./dist/es/link.mjs"
+			},
+			"require": {
+				"types": "./dist/cjs/link.d.ts",
+				"default": "./dist/cjs/link.js"
+			}
+		}
+	},
+	"scripts": {
+		"build": "bunchee",
+		"dev": "bunchee --watch",
+		"check-types": "tsc --noEmit",
+		"lint": "biome lint src/",
+		"lint:fix": "biome lint --write src/",
+		"format": "biome format --write src/",
+		"check": "biome check src/",
+		"test": "jest"
+	},
+	"jest": {
+		"preset": "@repo/jest-presets/browser"
+	},
+	"devDependencies": {
+		"@jest/globals": "^29.7.0",
+		"@repo/jest-presets": "*",
+		"@repo/typescript-config": "*",
+		"@types/node": "20.6.2",
+		"bunchee": "^6.4.0",
+		"jest": "^29.7.0",
+		"typescript": "~5.9.2"
+	},
+	"peerDependencies": {
+		"@types/react": "19.0.10",
+		"@types/react-dom": "19.1.9",
+		"react": "19.1.0",
+		"react-dom": "19.1.0"
+	}
 }
