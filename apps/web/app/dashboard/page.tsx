@@ -8,7 +8,7 @@ export default function DashboardPage() {
 				<div className="max-w-4xl mx-auto space-y-8">
 					<div className="text-center">
 						<h1 className="text-3xl font-bold">Dashboard</h1>
-						<p className="text-muted-foreground mt-2">Welcome to your PromptCraft dashboard</p>
+						<p className="text-muted-foreground mt-2">Welcome to your Promptify dashboard</p>
 					</div>
 
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
